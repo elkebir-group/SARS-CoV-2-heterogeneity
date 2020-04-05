@@ -12,6 +12,8 @@ The steps in the pipeline are as follows
 	6. Download metadata using pysradb (https://github.com/saketkc/pysradb)		
 	7. Filter and analyze the called SNVs
 
+The sorted_bam and sorted_dedup_bam folders need to be preserved. Rest of the folders can be deleted after use.
+
 # Dependencies
 	
 	1. bwa (> 0.7.17-r1188)
