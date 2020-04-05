@@ -14,3 +14,33 @@ The steps in the pipeline are as follows
 The task described in 0. is performed using download_update.sh or download_from_list.sh in the folder fastq.
 Tasks 1, 2 and 3 are performed using preprocess_illumina.sh.
 Filtering of the sequences, task 4, is performed using filter_illumina.sh 
+
+# Downloading Script
+
+This script must be run in the fastq folder
+
+Usage: ./download_from_list.sh \<SRA ACC list file\>
+
+	$ sh ./download_from_list.sh SRR_Acc_List_April2.txt
+
+The metadata will be stored in ../metadata folder.
+
+# Preprocessing Script
+
+Thie script should be run in the SARS-CoV-2-heterogeneity folder.
+
+Usage: ./preprocess_illumina.sh
+
+It will generate the following folders
+
+	1. illumina_seqeunces : It will contain soft link to the illumina sequences
+	2. sam : It will contain the sam files
+	3. sorted_sam : The sorted sam files
+	4. sorted_bam : The sorted bam files
+	5. sorted_dedup_bam : The sorted bam files with marked duplicates and its indexing
+
+# Filtering Script
+
+This script must also be from SARS-CoV-2-heterogeneity folder.
+
+Usage: ./filter_illumina \<output folder\> (\<mean depth threshold\>, default=50) (\<coverage breadth threshold\>, default=20) 
