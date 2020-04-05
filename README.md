@@ -68,7 +68,7 @@ Usage: ./callbcf.sh \<output file name\>
 	$ for f in filtered_illumina_sequences/*.bam; do echo $( basename $f .sorted.dedup.bam ); done > filtered_list_April2.txt
 	$ pysradb metadata $(<filtered_list_April2.txt) --saveto filtered_list_metadata_April2.txt --detailed
 
-# PosProcessing
+# Postprocessing
 
 This requires a fasta file with the consensus sequences (consensus.fasta).
 
