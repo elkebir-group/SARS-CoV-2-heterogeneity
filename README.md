@@ -63,21 +63,21 @@ Usage: ./callbcf.sh \<output file name\>
 
 # PosProcessing
 
-usage: process_vcf.py [-h] [--vcfFile VCFFILE] [--outputDir OUTPUTDIR]
-                      [--metadata METADATA] [--consensus CONSENSUS]
-                      [--qualitythreshold QUALITYTHRESHOLD]
+	usage: process_vcf.py [-h] [--vcfFile VCFFILE] [--outputDir OUTPUTDIR]
+			      [--metadata METADATA] [--consensus CONSENSUS]
+			      [--qualitythreshold QUALITYTHRESHOLD]
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --vcfFile VCFFILE, -i VCFFILE
-                        input alternate allele count file in space separated
-                        format
-  --outputDir OUTPUTDIR, -o OUTPUTDIR
-                        output directory for the sample summary files
-  --metadata METADATA, -m METADATA
-                        metadata file in csv format
-  --consensus CONSENSUS, -c CONSENSUS
-                        consensus seqeuncesin fasta format
-  --qualitythreshold QUALITYTHRESHOLD, -q QUALITYTHRESHOLD
-                        threshold for the phred quality score
+	optional arguments:
+	  -h, --help            show this help message and exit
+	  --vcfFile VCFFILE, -i VCFFILE
+				input alternate allele count file in space separated
+				format
+	  --outputDir OUTPUTDIR, -o OUTPUTDIR
+				output directory for the sample summary files
+	  --metadata METADATA, -m METADATA
+				metadata file in csv format
+	  --consensus CONSENSUS, -c CONSENSUS
+				consensus seqeuncesin fasta format
+	  --qualitythreshold QUALITYTHRESHOLD, -q QUALITYTHRESHOLD
+				threshold for the phred quality score
 
