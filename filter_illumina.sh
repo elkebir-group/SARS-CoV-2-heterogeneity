@@ -43,15 +43,16 @@ do
 	seqName=$( basename ${f} .sorted.dedup.bam )
 	if [ ! -f $seqFolder/depth_output/$seqName.depth ]
 	then
-		echo "samtools depth -a $f > $seqFolder/depth_output/$seqName.depth" >> depth.txt
+		#echo "samtools depth -a $f > $seqFolder/depth_output/$seqName.depth" >> depth.txt
+		samtools depth -a $f > $seqFolder/depth_output/$seqName.depth
 		counter=$(( $counter  + 1 ))
 	fi
 done
 
-if [ $counter -gt 0 ]
-then
-	parallel -j12 --bar :::: depth.txt
-fi
+#if [ $counter -gt 0 ]
+#then
+#	parallel -j12 --bar :::: depth.txt
+#fi
 
 statFile="$seqFolder/all_stats_file.csv"
 
