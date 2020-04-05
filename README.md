@@ -12,10 +12,6 @@ The steps in the pipeline are as follows
 	6. Download metadata using pysradb (https://github.com/saketkc/pysradb)		
 	7. Filter and analyze the called SNVs
 
-The task described in 0. is performed using download_update.sh or download_from_list.sh in the folder fastq.
-Tasks 1, 2 and 3 are performed using preprocess_illumina.sh.
-Filtering of the sequences, task 4, is performed using filter_illumina.sh 
-
 # Downloading Script
 
 This script must be run in the fastq folder
