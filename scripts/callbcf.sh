@@ -13,4 +13,6 @@ do
     filelist="${filelist} ${file}"
 done
 
-echo "bcftools mpileup -f ../reference.fasta -q 20 -Q 20 -a DP,AD,ADF,ADR,SP --skip-indels $filelist > $1"  
+bcftools mpileup -f ../reference.fasta -q 20 -Q 20 -a DP,AD,ADF,ADR,SP --skip-indels $filelist > ${1}.mpileup
+
+bcftools call -mv -Ov -o $1 ${1}.mpileup  
