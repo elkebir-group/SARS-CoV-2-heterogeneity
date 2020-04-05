@@ -61,6 +61,12 @@ Usage: ./callbcf.sh \<output file name\>
 	$ ln -s ../scripts/callbcf.sh .
 	$ ./callbcf.sh snv_file.vcf
 
+# Downloading Metadata
+
+	$ cd ..
+	$ for f in filtered_illumina_sequences/*.bam; do echo $( basename $f .sorted.dedup.bam ); done > filtered_list_April2.txt
+	$ pysradb metadata $(<filtered_list_April2.txt) --saveto filtered_list_metadata_April2.txt --detailed
+
 # PosProcessing
 
 	usage: process_vcf.py [-h] [--vcfFile VCFFILE] [--outputDir OUTPUTDIR]
@@ -81,3 +87,8 @@ Usage: ./callbcf.sh \<output file name\>
 	  --qualitythreshold QUALITYTHRESHOLD, -q QUALITYTHRESHOLD
 				threshold for the phred quality score
 
+
+Example:
+
+	$ cd ../script
+	$ python process.py -i ../filtered_illumina_sequences/snv_file.vcf -o ../results -m ../filtered_list_metadata_April2.txt -c ../masked.fasta -q 20 
