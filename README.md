@@ -12,6 +12,14 @@ The steps in the pipeline are as follows
 	6. Download metadata using pysradb (https://github.com/saketkc/pysradb)		
 	7. Filter and analyze the called SNVs
 
+# Dependencies
+	
+	1. bwa (> 0.7.17-r1188)
+	2. samtools (> 1.9)
+	3. gatk (> 4.1.0.0)
+	4. bcftools (> 1.9)
+	5. pysradb (> 0.9.5)
+
 # Downloading Script
 
 This script must be run in the fastq folder
