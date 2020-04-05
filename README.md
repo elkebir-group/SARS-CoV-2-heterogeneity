@@ -9,7 +9,8 @@ The steps in the pipeline are as follows
 	3. Mark duplicates reads using gatk
 	4. Filter sequences based on some mean depth and breath coverage threshold 
 	5. Call SNVs using bcftools
-	6. Filter and analyze the called SNVs
+	6. Download metadata using pysradb (https://github.com/saketkc/pysradb)		
+	7. Filter and analyze the called SNVs
 
 The task described in 0. is performed using download_update.sh or download_from_list.sh in the folder fastq.
 Tasks 1, 2 and 3 are performed using preprocess_illumina.sh.
@@ -69,6 +70,8 @@ Usage: ./callbcf.sh \<output file name\>
 
 # PosProcessing
 
+This requires a fasta file with the consensus sequences (consensus.fasta).
+
 	usage: process_vcf.py [-h] [--vcfFile VCFFILE] [--outputDir OUTPUTDIR]
 			      [--metadata METADATA] [--consensus CONSENSUS]
 			      [--qualitythreshold QUALITYTHRESHOLD]
@@ -91,4 +94,4 @@ Usage: ./callbcf.sh \<output file name\>
 Example:
 
 	$ cd ../script
-	$ python process.py -i ../filtered_illumina_sequences/snv_file.vcf -o ../results -m ../filtered_list_metadata_April2.txt -c ../masked.fasta -q 20 
+	$ python process.py -i ../filtered_illumina_sequences/snv_file.vcf -o ../results -m ../filtered_list_metadata_April2.txt -c ../consensus.fasta -q 20 
