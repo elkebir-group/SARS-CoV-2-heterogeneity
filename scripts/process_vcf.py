@@ -144,7 +144,7 @@ df_sum = pd.read_csv(outDir + "/sample_summary.tsv", sep="\t")
 
 if not os.path.exists(outDir + "/subclonal.pdf"):
     print('plotting number of subclonal mutations per sample')    
-    sns.barplot(palette=[sns.color_palette()[1]]+[sns.color_palette()[0]]*15, x="mutations", y="sample", data=df_sum[df_sum["type"] == "subclonal"].groupby("mutations").count().reset_index())
+    sns.barplot(color="blue", x="mutations", y="sample", data=df_sum[df_sum["type"] == "subclonal"].groupby("mutations").count().reset_index())
     plt.gca().set_xlabel("number of subclonal mutations")
     plt.gca().set_ylabel("number of samples")
     plt.savefig(outDir + "/subclonal.pdf")
@@ -152,7 +152,7 @@ if not os.path.exists(outDir + "/subclonal.pdf"):
 if not os.path.exists(outDir + "/subclonal_mutations.pdf"):
     print('making subclonal mutation distribution plot')
     df_plot = pd.DataFrame([(pos, shared_count[pos]) for pos in subclonal_pos], columns=['pos', 'samples']).groupby('samples').count().reset_index()
-    sns.barplot(palette=[sns.color_palette()[2]] + [sns.color_palette()[3]]*11,
+    sns.barplot(color = "blue",
                 data= df_plot, 
                 x="samples", y="pos")
     plt.gca().set_xlabel("number of samples")
