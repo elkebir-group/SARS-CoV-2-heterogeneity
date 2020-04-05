@@ -21,7 +21,8 @@ This script must be run in the fastq folder
 
 Usage: ./download_from_list.sh \<SRA ACC list file\>
 
-	$ sh ./download_from_list.sh SRR_Acc_List_April2.txt
+	$ cd fastq
+	$ ./download_from_list.sh SRR_Acc_List_April2.txt
 
 The metadata will be stored in ../metadata folder.
 
@@ -30,6 +31,9 @@ The metadata will be stored in ../metadata folder.
 Thie script should be run in the SARS-CoV-2-heterogeneity folder.
 
 Usage: ./preprocess_illumina.sh
+
+	$ cd ..
+	$ ./preprocess_illumina.sh
 
 It will generate the following folders
 
@@ -44,3 +48,36 @@ It will generate the following folders
 This script must also be from SARS-CoV-2-heterogeneity folder.
 
 Usage: ./filter_illumina \<output folder\> (\<mean depth threshold\>, default=50) (\<coverage breadth threshold\>, default=20) 
+
+	$ ./filter_illumina filtered_illumina_sequences
+
+It will generate the folder filtered_illumina_sequences which will contain soft link to the sequences that pass the threshold
+
+# SNV calling
+
+Usage: ./callbcf.sh \<output file name\>
+
+	$ cd filtered_illumina_sequences
+	$ ln -s ../scripts/callbcf.sh .
+	$ ./callbcf.sh snv_file.vcf
+
+# PosProcessing
+
+usage: process_vcf.py [-h] [--vcfFile VCFFILE] [--outputDir OUTPUTDIR]
+                      [--metadata METADATA] [--consensus CONSENSUS]
+                      [--qualitythreshold QUALITYTHRESHOLD]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --vcfFile VCFFILE, -i VCFFILE
+                        input alternate allele count file in space separated
+                        format
+  --outputDir OUTPUTDIR, -o OUTPUTDIR
+                        output directory for the sample summary files
+  --metadata METADATA, -m METADATA
+                        metadata file in csv format
+  --consensus CONSENSUS, -c CONSENSUS
+                        consensus seqeuncesin fasta format
+  --qualitythreshold QUALITYTHRESHOLD, -q QUALITYTHRESHOLD
+                        threshold for the phred quality score
+
