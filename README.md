@@ -95,9 +95,10 @@ This requires a fasta file with the consensus sequences (consensus.fasta).
 				consensus seqeuncesin fasta format
 	  --qualitythreshold QUALITYTHRESHOLD, -q QUALITYTHRESHOLD
 				threshold for the phred quality score
-
+	  --exclusionList EXCLUSIONLIST, -e EXCLUSIONLIST
+        	                exclusion list				
 
 Example:
 
 	$ cd ../script
-	$ python process.py -i ../filtered_illumina_sequences/snv_file.vcf -o ../results -m ../filtered_list_metadata_April2.txt -c ../consensus.fasta -q 20 
+	$ python process.py -i ../filtered_illumina_sequences/snv_file.vcf -o ../results -m ../filtered_list_metadata_April2.txt -c ../consensus.fasta -q 20 -e ../exclusion_list.txt
