@@ -1,11 +1,16 @@
-#!/usr/bin/python
-from __future__ import print_function
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Apr  3 05:17:47 2020
+
+@author: aero_user
+"""
 
 import os, sys, glob
 import math
 import numpy as np
 import pandas as pd
-#import matplotlib as mpl
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 import argparse
@@ -14,10 +19,12 @@ import allel
 parser = argparse.ArgumentParser()
 #parser.add_argument('--refFile','-r', help='input reference allele count file in space separated format',default='../results/ref_file.out')
 #parser.add_argument('--altFile','-a', help='input alternate allele count file in space separated format',default='../results/alt_file.out')
-parser.add_argument('--vcfFile','-i', help='input alternate allele count file in space separated format',default='../results/covid.vcf')
+parser.add_argument('--vcfFile','-i', help='input alternate allele count file in space separated format')
 parser.add_argument('--outputDir','-o', help='output directory for the sample summary files',default='../test/results')
 parser.add_argument('--metadata','-m', help='metadata file in csv format',default='../results/metadata.csv')
 parser.add_argument('--consensus','-c',help='consensus seqeuncesin fasta format',default='../restuls/consensus.fasta')
+parser.add_argument('--qualitythreshold', '-q', help='threshold for the phred quality score', default=20)
+parser.add_argument('--exclusionList', '-e', help='exclusion list')
 
 args = parser.parse_args()
 
@@ -27,28 +34,42 @@ callset = allel.read_vcf('../test/covid_annotated_dedup_April2.vcf', fields='*')
 
 sampleNames=[element.split('.')[0] for element in callset['samples']]
 
+qualityScores=list(callset['variants/QUAL'])
+
 data_ref = {}
 
 data_ref['pos'] = list(callset['variants/POS'])
 data_ref['ref'] = list(callset['variants/REF'])
 data_ref['alt'] = list([alt[0] for alt in callset['variants/ALT']])
+data_ref['qual'] = list(callset['variants/QUAL'])
 for i in range(len(sampleNames)):
     sample = sampleNames[i]
     data_ref[sample] = list([ad[i][0] for ad in callset['calldata/AD']])
-        
+    
 df_ref = pd.DataFrame(data_ref).set_index(['pos','ref','alt'])
+
+# filter the mutations
+df_ref[df_ref['qual'] >= 20]
+# remove quality column
+del df_ref['qual']
+
 
 data_alt = {}
 
 data_alt['pos'] = list(callset['variants/POS'])
 data_alt['ref'] = list(callset['variants/REF'])
 data_alt['alt'] = list([alt[0] for alt in callset['variants/ALT']])
+data_alt['qual'] = list(callset['variants/QUAL'])
 for i in range(len(sampleNames)):
     sample = sampleNames[i]
     data_alt[sample] = list([ad[i][1] for ad in callset['calldata/AD']])
         
 df_alt = pd.DataFrame(data_alt).set_index(['pos','ref','alt'])
 
+# filter the mutations
+df_alt[df_alt['qual'] >= 20]
+# remove quality column
+del df_alt['qual']
 
 print('removing sequences with the same sample accession numbers')
 
@@ -66,8 +87,19 @@ for column in df_ref:
         del df_alt[column]
     else:
         sampleAccessions.add(name)
-
+        
 print('removed ',str(idx),' samples')
+
+print('removing samples in the exclusion list')
+
+if args.exclusionList:
+    with open(args.exclusionList,'r') as input:
+        for line in input:
+            line = line.rstrip()
+            if line in df_ref.columns:
+                print('removing ',str(line), ' given in the exclusion list')
+                del df_ref[line]
+                del df_alt[line]    
 
 
 df_vaf=(df_alt/(df_alt+df_ref))
@@ -144,7 +176,7 @@ df_sum = pd.read_csv(outDir + "/sample_summary.tsv", sep="\t")
 
 if not os.path.exists(outDir + "/subclonal.pdf"):
     print('plotting number of subclonal mutations per sample')    
-    sns.barplot(color="blue", x="mutations", y="sample", data=df_sum[df_sum["type"] == "subclonal"].groupby("mutations").count().reset_index())
+    sns.barplot(x="mutations", y="sample", color="blue", data=df_sum[df_sum["type"] == "subclonal"].groupby("mutations").count().reset_index())
     plt.gca().set_xlabel("number of subclonal mutations")
     plt.gca().set_ylabel("number of samples")
     plt.savefig(outDir + "/subclonal.pdf")
@@ -152,36 +184,37 @@ if not os.path.exists(outDir + "/subclonal.pdf"):
 if not os.path.exists(outDir + "/subclonal_mutations.pdf"):
     print('making subclonal mutation distribution plot')
     df_plot = pd.DataFrame([(pos, shared_count[pos]) for pos in subclonal_pos], columns=['pos', 'samples']).groupby('samples').count().reset_index()
-    sns.barplot(color = "blue",
-                data= df_plot, 
+    sns.barplot(data= df_plot, color="blue",
                 x="samples", y="pos")
     plt.gca().set_xlabel("number of samples")
     plt.gca().set_ylabel("number of subclonal mutations")
     plt.savefig(outDir + "/subclonal_mutations.pdf")
 
-print('picking the samples that have high depth and subclonal mutations')
-variant_positions_with_clonal_reduced = set([])
-heterogeneous_samples_with_clonal_reduced = []
-idx = 1
-for sample in samples:
-    #print  df_meta.loc[sample]['geo_loc_name'] 
-    df = pd.read_csv(outDir + "/%s.tsv" % sample, sep="\t")
-    df_res = df[(df["vaf"] >= 0.1) & (df["tot"] >= 50)]
-    if len(df_res) > 0:
-        heterogeneous_samples_with_clonal_reduced.append(sample)
-        #print(idx, sample, list(df_res["pos"]))
-        variant_positions_with_clonal_reduced |= set(df_res["pos"])
-        idx += 1
+#print('picking the samples that have high depth and subclonal mutations')
+#variant_positions_with_clonal_reduced = set([])
+#heterogeneous_samples_with_clonal_reduced = []
+#idx = 1
+#for sample in samples:
+#    #print  df_meta.loc[sample]['geo_loc_name'] 
+#    df = pd.read_csv(outDir + "/%s.tsv" % sample, sep="\t")
+#    df_res = df[(df["vaf"] >= 0.1) & (df["tot"] >= 50)]
+#    if len(df_res) > 0:
+#        heterogeneous_samples_with_clonal_reduced.append(sample)
+#        #print(idx, sample, list(df_res["pos"]))
+#        variant_positions_with_clonal_reduced |= set(df_res["pos"])
+#        idx += 1
+#
+#df_het_vaf_with_clonal_reduced = df_vaf[heterogeneous_samples_with_clonal_reduced].reset_index()
+#df_het_vaf_with_clonal_reduced = df_het_vaf_with_clonal_reduced[df["pos"].isin(variant_positions_with_clonal_reduced)].set_index(["pos", "ref", "alt"])
 
-df_het_vaf_with_clonal_reduced = df_vaf[heterogeneous_samples_with_clonal_reduced].reset_index()
-df_het_vaf_with_clonal_reduced = df_het_vaf_with_clonal_reduced[df["pos"].isin(variant_positions_with_clonal_reduced)].set_index(["pos", "ref", "alt"])
+df_het_vaf_with_clonal_reduced = df_vaf
 
-print('making VAF=0 if the number of reads supporting alternate allele is less than 5')
-for index in df_het_vaf_with_clonal_reduced.index:
-    for column in df_het_vaf_with_clonal_reduced.columns:
-        if df_alt[column][index] < 5 & df_dep[column][index] != 0:
-            #print(column, index)
-            df_het_vaf_with_clonal_reduced.loc[index,column] = 0
+#print('making VAF=0 if the number of reads supporting alternate allele is less than 5')
+#for index in df_het_vaf_with_clonal_reduced.index:
+#    for column in df_het_vaf_with_clonal_reduced.columns:
+#        if df_alt[column][index] < 5 & df_dep[column][index] != 0:
+#            #print(column, index)
+#            df_het_vaf_with_clonal_reduced.loc[index,column] = 0
 
 df_het_vaf_with_clonal_reduced.columns = [str(col_name) + '|' + str(df_meta.loc[col_name]['geo_loc_name']) for col_name in df_het_vaf_with_clonal_reduced.columns]
             
@@ -352,7 +385,7 @@ newcols = cols[nCols:] + cols[:nCols]
 df = df[newcols]
 
 print('writing final vaf results')
-df.to_csv(outDir + "/final_vaf_results.csv", na_rep='NULL')
+df.to_csv(outDir + "/final_vaf_results.tsv", na_rep='NULL', sep='\t')
 
 # changing dataframe to get ref values
 for column in list(df.columns)[7:]:
@@ -362,7 +395,7 @@ for column in list(df.columns)[7:]:
         df.loc[index,column] = int(df_ref[seqName][index])
 
 print('writing final ref results')
-df.to_csv(outDir + "/final_ref_results.csv", na_rep='NULL')
+df.to_csv(outDir + "/final_ref_results.tsv", na_rep='NULL', sep='\t')
 
 # changing dataframe to get alt values
 for column in list(df.columns)[7:]:
@@ -372,4 +405,4 @@ for column in list(df.columns)[7:]:
         df.loc[index,column] = int(df_alt[seqName][index])
 
 print('writing final alt results')
-df.to_csv(outDir + "/final_alt_results.csv", na_rep='NULL')
+df.to_csv(outDir + "/final_alt_results.tsv", na_rep='NULL', sep='\t')
