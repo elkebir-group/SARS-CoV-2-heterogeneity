@@ -30,7 +30,7 @@ args = parser.parse_args()
 
 print('reading the vcf file')
 
-callset = allel.read_vcf('../test/covid_annotated_dedup_April2.vcf', fields='*')
+callset = allel.read_vcf(args.vcfFile, fields='*')
 
 sampleNames=[element.split('.')[0] for element in callset['samples']]
 
