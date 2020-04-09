@@ -48,7 +48,7 @@ It will generate the following folders
 	4. sorted_bam : The sorted bam files
 	5. sorted_dedup_bam : The sorted bam files with marked duplicates and its indexing
 
-The sorted_bam and sorted_dedup_bam folders need to be preserved. Rest of the folders can be deleted after use.
+The sorted_bam and sorted_dedup_bam folders need to be preserved. Rest of the folders can be deleted after use. 
 
 # Filtering Script
 
